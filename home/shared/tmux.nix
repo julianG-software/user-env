@@ -1,11 +1,11 @@
 { ... }: {
   programs.tmux = {
     enable = true;
-    prefix = "C-Space";
+    prefix = "C-]";
     extraConfig = ''
       unbind-key -a
       bind-key : command-prompt
-      bind-key C-Space send-prefix
+      bind-key C-] send-prefix
     '';
   };
 }
