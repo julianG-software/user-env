@@ -55,6 +55,13 @@
           nvimPkg = preset: neovim-config.packages.${system}.${preset};
           zdotdir = ./home/shared/zsh;
 
+          tmuxConf = pkgs.writeText "tmux.conf" ''
+            unbind-key -a
+            set -g prefix C-]
+            bind-key : command-prompt
+            bind-key C-] send-prefix
+          '';
+
           mkPkg =
             {
               name,
@@ -93,10 +100,10 @@
                   if withTmux then
                     ''
                       export SHELL="${pkgs.zsh}/bin/zsh"
-                      if tmux has-session -t user-env 2>/dev/null; then
-                        tmux attach-session -t user-env || true
+                      if tmux -f ${tmuxConf} has-session -t user-env 2>/dev/null; then
+                        tmux -f ${tmuxConf} attach-session -t user-env || true
                       else
-                        tmux new-session -s user-env || true
+                        tmux -f ${tmuxConf} new-session -s user-env || true
                       fi
                       if [[ -f "$HOME/.user-env-cleanup" ]]; then
                         rm "$HOME/.user-env-cleanup"
