@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792272768,
-        "narHash": "sha256-XtvFppxtfsarqx6qQ32+AshMjfuPnL01D38n0zhnCjk=",
+        "lastModified": 1792324648,
+        "narHash": "sha256-GAjvx+U5vCpNuJeNieh5cKh34dzh8z+JR78qBG3AYaY=",
         "owner": "julianG-software",
         "repo": "neovim-config",
-        "rev": "5c05d4b1a7d9da11cb23d2e6bd9b9b3d8eb957d4",
+        "rev": "9fe74a27a41dac4c7cd5f2f6a0eed10faad73c70",
         "type": "github"
       },
       "original": {
