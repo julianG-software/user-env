@@ -25,6 +25,7 @@ if command -v direnv &>/dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+
 # Syntax highlighting (must be loaded last)
 source "$ZSH_SYNTAX_HIGHLIGHTING_PLUGIN"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main)

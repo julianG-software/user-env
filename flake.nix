@@ -82,6 +82,7 @@
               text = ''
                 export ZDOTDIR="${zdotdir}"
                 export HISTFILE="/dev/null"
+                export USER_ENV_EPHEMERAL=1
                 export ZSH_AUTOSUGGESTIONS_PLUGIN="${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
                 export ZSH_SYNTAX_HIGHLIGHTING_PLUGIN="${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
                 export ZSH_OMZ_SUDO_PLUGIN="${pkgs.oh-my-zsh}/share/oh-my-zsh/plugins/sudo/sudo.plugin.zsh"
@@ -93,14 +94,21 @@
                     ''
                       export SHELL="${pkgs.zsh}/bin/zsh"
                       if tmux has-session -t user-env 2>/dev/null; then
-                        exec tmux attach-session -t user-env
+                        tmux attach-session -t user-env || true
                       else
-                        exec tmux new-session -s user-env
+                        tmux new-session -s user-env || true
+                      fi
+                      if [[ -f "$HOME/.user-env-cleanup" ]]; then
+                        rm "$HOME/.user-env-cleanup"
+                        nix profile wipe-history || true
+                        nix-collect-garbage -d || true
                       fi
                     ''
                   else
                     ''
-                      exec ${pkgs.zsh}/bin/zsh
+                      ${pkgs.zsh}/bin/zsh || true
+                      nix profile wipe-history || true
+                      nix-collect-garbage -d || true
                     ''
                 }
               '';
