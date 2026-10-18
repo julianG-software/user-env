@@ -57,7 +57,9 @@
 
           tmuxConf = pkgs.writeText "tmux.conf" ''
             unbind-key -a
-            bind-key -n C-] command-prompt
+            set -g prefix C-]
+            bind-key : command-prompt
+            bind-key C-] command-prompt
           '';
 
           mkPkg =
