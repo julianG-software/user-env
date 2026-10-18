@@ -100,13 +100,13 @@
                   if withTmux then
                     ''
                       export SHELL="${pkgs.zsh}/bin/zsh"
-                      if tmux -f ${tmuxConf} has-session -t user-env 2>/dev/null; then
-                        tmux -f ${tmuxConf} attach-session -t user-env || true
+                      if tmux -L user-env -f ${tmuxConf} has-session -t user-env 2>/dev/null; then
+                        tmux -L user-env -f ${tmuxConf} attach-session -t user-env || true
                       else
-                        tmux -f ${tmuxConf} new-session -s user-env || true
+                        tmux -L user-env -f ${tmuxConf} new-session -s user-env || true
                       fi
                       if [[ -f "$HOME/.user-env-cleanup" ]]; then
-                        rm "$HOME/.user-env-cleanup"
+                        rm -f "$HOME/.user-env-cleanup"
                         nix profile wipe-history || true
                         nix-collect-garbage -d || true
                       fi
