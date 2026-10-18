@@ -47,7 +47,118 @@
         full = mkHomeModule "full" "full";
       };
 
-      # TODO: ephemeral packages for nix profile install / nix run
-      # packages = forAllSystems (system: { ... });
+      # Ephemeral install — nix run github:julianG-software/user-env#<role>
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          nvimPkg = preset: neovim-config.packages.${system}.${preset};
+          zdotdir = ./home/shared/zsh;
+
+          mkPkg =
+            {
+              name,
+              nvimPreset,
+              extraPackages ? [ ],
+              withTmux ? false,
+            }:
+            let
+              tmuxPkgs = if withTmux then [ pkgs.tmux ] else [ ];
+            in
+            pkgs.writeShellApplication {
+              inherit name;
+              runtimeInputs =
+                (with pkgs; [
+                  pkgs.zsh
+                  eza
+                  oh-my-posh
+                  fzf
+                  btop
+                  jq
+                  (nvimPkg nvimPreset)
+                ])
+                ++ extraPackages
+                ++ tmuxPkgs;
+              text = ''
+                export ZDOTDIR="${zdotdir}"
+                export HISTFILE="/dev/null"
+                export ZSH_AUTOSUGGESTIONS_PLUGIN="${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+                export ZSH_SYNTAX_HIGHLIGHTING_PLUGIN="${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+                export ZSH_OMZ_SUDO_PLUGIN="${pkgs.oh-my-zsh}/share/oh-my-zsh/plugins/sudo/sudo.plugin.zsh"
+                export ZSH_OMZ_EXTRACT_PLUGIN="${pkgs.oh-my-zsh}/share/oh-my-zsh/plugins/extract/extract.plugin.zsh"
+                export OMP_THEME_PATH="${pkgs.oh-my-posh}/share/oh-my-posh/themes/catppuccin_frappe.omp.json"
+
+                ${
+                  if withTmux then
+                    ''
+                      export SHELL="${pkgs.zsh}/bin/zsh"
+                      if tmux has-session -t user-env 2>/dev/null; then
+                        exec tmux attach-session -t user-env
+                      else
+                        exec tmux new-session -s user-env
+                      fi
+                    ''
+                  else
+                    ''
+                      exec ${pkgs.zsh}/bin/zsh
+                    ''
+                }
+              '';
+            };
+        in
+        {
+          minimal = mkPkg {
+            name = "minimal";
+            nvimPreset = "basic";
+          };
+          admin = mkPkg {
+            name = "admin";
+            nvimPreset = "config";
+            extraPackages = with pkgs; [
+              ripgrep
+              fd
+              yq-go
+              delta
+              nix-tree
+              nix-diff
+              direnv
+            ];
+            withTmux = true;
+          };
+          development = mkPkg {
+            name = "development";
+            nvimPreset = "coding";
+            extraPackages = with pkgs; [
+              ripgrep
+              fd
+              yq-go
+              delta
+              nix-tree
+              nix-diff
+              direnv
+              lazygit
+            ];
+            withTmux = true;
+          };
+          full = mkPkg {
+            name = "full";
+            nvimPreset = "full";
+            extraPackages = with pkgs; [
+              ripgrep
+              fd
+              yq-go
+              delta
+              nix-tree
+              nix-diff
+              direnv
+              lazygit
+              wl-clipboard
+              xclip
+            ];
+            withTmux = true;
+          };
+          default = self.packages.${system}.full;
+        }
+      );
     };
 }
