@@ -2,7 +2,7 @@
   programs.git = {
     enable = true;
 
-    aliases = {
+    settings.alias = {
       undo = "reset HEAD~";
     };
   };

@@ -10,7 +10,7 @@
       share      = true;
     };
 
-    initExtra = ''
+    initContent = ''
       setopt HIST_FCNTL_LOCK
 
       source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
