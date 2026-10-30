@@ -16,10 +16,10 @@
     nix-direnv.enable = true;
   };
 
-  home.sessionVariables.EDITOR = lib.mkDefault neovimPkg.pname;
+  home.sessionVariables.EDITOR = lib.mkDefault neovimPkg.name;
 
   programs.zsh.shellAliases = lib.mapAttrs (_: lib.mkDefault) {
-    vi  = neovimPkg.pname;
-    vim = neovimPkg.pname;
+    vi  = neovimPkg.name;
+    vim = neovimPkg.name;
   };
 }
